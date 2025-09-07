@@ -11,10 +11,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Search, Filter, MapPin, Megaphone, Star, Play, ArrowDown, LogOut, User, BarChart3 } from 'lucide-react';
+import { Search, Filter, MapPin, Star, Play, ArrowDown, LogOut, User, BarChart3 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import heroBillboard from '@/assets/hero-billboard.jpg';
+import { BRAND_NAME, BRAND_LOGO } from '@/lib/branding';
 
 const Index = () => {
   const { user, logout, isAdmin } = useAuth();
@@ -152,8 +153,8 @@ const Index = () => {
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
           <div className="mb-6">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 backdrop-blur-sm rounded-full border border-primary/30 mb-4">
-              <Megaphone className="h-5 w-5 text-primary" />
-              <span className="text-primary text-sm font-medium">منصة حجز اللوحات الإعلانية</span>
+              <img src={BRAND_LOGO} alt={BRAND_NAME} className="h-5 w-5 rounded-sm object-cover" />
+              <span className="text-primary text-sm font-medium">{BRAND_NAME}</span>
             </div>
           </div>
           
@@ -207,12 +208,10 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-primary rounded-lg">
-                <Megaphone className="h-6 w-6 text-primary-foreground" />
+                <img src={BRAND_LOGO} alt={BRAND_NAME} className="h-6 w-6 rounded-sm object-cover" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-foreground">
-                  اللوحات المتاحة
-                </h2>
+                <h2 className="text-xl font-bold text-foreground">{BRAND_NAME}</h2>
                 <p className="text-sm text-muted-foreground">اختر من بين أفضل المواقع الإعلانية</p>
               </div>
             </div>
