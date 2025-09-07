@@ -281,49 +281,6 @@ export const ContractsTable = () => {
       </Card>
 
 
-      {/* عقود منتهية */}
-      <Card>
-        <CardHeader>
-          <CardTitle>عقود منتهية ({expiredContracts.length})</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-right">رقم العقد</TableHead>
-                <TableHead className="text-right">اسم العمي��</TableHead>
-                <TableHead className="text-right">نوع الإعلان</TableHead>
-                <TableHead className="text-right">تاريخ الانتهاء</TableHead>
-                <TableHead className="text-right">القيمة الإجمالية</TableHead>
-                <TableHead className="text-right">الحالة</TableHead>
-                <TableHead className="text-right">الإجراءات</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {expiredContracts.map(({contract}, index) => (
-                <TableRow key={`${(contract.Contract_Number ?? contract['Contract Number'] ?? 'no-num')}-e-${index}`}>
-                  <TableCell className="font-medium">{contract.Contract_Number ?? contract['Contract Number']}</TableCell>
-                  <TableCell>{contract['Customer Name']}</TableCell>
-                  <TableCell><Badge variant="outline">{contract['Ad Type']}</Badge></TableCell>
-                  <TableCell>{formatDate(contract['End Date'])}</TableCell>
-                  <TableCell>{formatCurrency(contract['Total Rent'])}</TableCell>
-                  <TableCell>{getStatusBadge(contract)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0"><Eye className="h-4 w-4" /></Button>
-                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0"><Edit className="h-4 w-4" /></Button>
-                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {expiredContracts.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">لا توجد عقود منتهية</div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 };
