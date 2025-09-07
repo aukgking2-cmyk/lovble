@@ -1,7 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Billboard, Contract, Pricing } from '@/types';
 import { loadBillboards as loadBillboardsNormalized } from '@/services/billboardService';
-import { supabase } from '@/integrations/supabase/client';
 
 // جلب جميع اللوحات
 export const fetchAllBillboards = async (): Promise<Billboard[]> => {
@@ -109,7 +108,7 @@ export const fetchContracts = async (): Promise<Contract[]> => {
     }
 
     const mapped: Contract[] = (v2 || []).map((c: any) => ({
-      // id غير متاح بالصيغة الرقمية في الجدول الحديث
+      // id غير متاح بالصيغة الرقمية في ��لجدول الحديث
       Contract_Number: String(c.id),
       'Contract Number': String(c.id),
       'Customer Name': c.customer_name ?? '',
