@@ -104,20 +104,14 @@ export const BillboardGridCard: React.FC<BillboardGridCardProps> = ({
 
           {/* الموقع */}
           <div className="space-y-2 mb-4">
-            {/* السطر 1: المدينة (الموقع) */}
-            {(billboard.City || billboard.Municipality) && (
+            {/* السطر 1: أقرب نقطة دالة (بدلاً من المدينة) */}
+            {(billboard.Nearest_Landmark || billboard.District || billboard.Municipality) && (
               <div className="flex items-center text-lg text-foreground font-semibold">
                 <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
-                <span className="truncate">{billboard.City || billboard.Municipality}</span>
+                <span className="truncate">{billboard.Nearest_Landmark || billboard.District || billboard.Municipality}</span>
               </div>
             )}
 
-            {/* السطر 2: أقرب نقطة دالة */}
-            {billboard.Nearest_Landmark && (
-              <div className="text-sm text-muted-foreground pr-6">
-                {billboard.Nearest_Landmark}
-              </div>
-            )}
 
             {/* السطر 3: المنطقة + البلدية */}
             {(billboard.District || billboard.Municipality) && (
