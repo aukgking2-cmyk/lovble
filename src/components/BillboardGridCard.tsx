@@ -127,17 +127,12 @@ export const BillboardGridCard: React.FC<BillboardGridCardProps> = ({
           </div>
 
           {/* معلومات إضافية */}
-          <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
-            <div>
-              <span className="text-muted-foreground">المستوى:</span>
-              <br />
-              <span className="font-medium">{billboard.Level || 'عادي'}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">الأوجه:</span>
-              <br />
-              <span className="font-medium">{billboard.Faces_Count || '1'}</span>
-            </div>
+          <div className="mb-4 text-sm">
+            <span className="text-muted-foreground">المستوى:</span>{' '}
+            <span className="font-medium">{billboard.Level || 'عادي'}</span>
+            <span className="mx-2">—</span>
+            <span className="text-muted-foreground">الأوجه:</span>{' '}
+            <span className="font-medium">{billboard.Faces_Count || '1'}</span>
           </div>
 
           {/* معلومات العقد - للمدير فقط */}
