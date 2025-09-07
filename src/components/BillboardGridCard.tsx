@@ -30,7 +30,7 @@ export const BillboardGridCard: React.FC<BillboardGridCardProps> = ({
     ? 'bg-amber-500 hover:bg-amber-600'
     : 'bg-red-500 hover:bg-red-600';
 
-  // حساب الأيام المتبقية
+  // حساب الأيا�� المتبقية
   const getDaysRemaining = () => {
     if (!billboard.Rent_End_Date) return null;
 
@@ -128,10 +128,7 @@ export const BillboardGridCard: React.FC<BillboardGridCardProps> = ({
 
           {/* معلومات إضافية */}
           <div className="mb-4 text-sm">
-            <span className="text-muted-foreground">المستوى:</span>{' '}
-            <span className="font-medium">{billboard.Level || 'عادي'}</span>
-            <span className="mx-2">—</span>
-            <span className="text-muted-foreground">الأوجه:</span>{' '}
+            <span className="text-muted-foreground">عدد الأوجه:</span>{' '}
             <span className="font-medium">{billboard.Faces_Count || '1'}</span>
           </div>
 
