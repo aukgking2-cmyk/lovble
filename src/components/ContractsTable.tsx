@@ -52,9 +52,9 @@ export const ContractsTable = () => {
     list.filter((contract) => {
       const searchOk =
         contract['Customer Name']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contract['Contract Number']?.toString().includes(searchTerm) ||
+        (contract.Contract_Number ?? contract['Contract Number'] ?? '').toString().includes(searchTerm) ||
         contract['Ad Type']?.toLowerCase().includes(searchTerm.toLowerCase());
-      const numberOk = !contractNumberFilter || contract['Contract Number']?.toString().includes(contractNumberFilter);
+      const numberOk = !contractNumberFilter || (contract.Contract_Number ?? contract['Contract Number'] ?? '').toString().includes(contractNumberFilter);
       return searchOk && numberOk;
     });
 
@@ -210,7 +210,7 @@ export const ContractsTable = () => {
               />
             </div>
             <Input
-              placeholder="فلترة برقم العقد"
+              placeholder="فلترة ��رقم العقد"
               value={contractNumberFilter}
               onChange={(e) => setContractNumberFilter(e.target.value)}
               className="w-48"
@@ -237,9 +237,9 @@ export const ContractsTable = () => {
             </TableHeader>
             <TableBody>
               {filteredContracts.map((contract, index) => (
-                <TableRow key={`${contract['Contract Number'] ?? 'no-num'}-${index}`}>
+                <TableRow key={`${(contract.Contract_Number ?? contract['Contract Number'] ?? 'no-num')}-${index}`}>
                   <TableCell className="font-medium">
-                    {contract['Contract Number']}
+                    {contract.Contract_Number ?? contract['Contract Number']}
                   </TableCell>
                   <TableCell>{contract['Customer Name']}</TableCell>
                   <TableCell>

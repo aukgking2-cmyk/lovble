@@ -36,15 +36,26 @@ export const fetchAllBillboards = async (): Promise<Billboard[]> => {
 // جلب العقود مع دعم جدولين محتملين واستخراج أخطاء أوضح
 export const fetchContracts = async (): Promise<Contract[]> => {
   try {
-    // المحاولة 1: جدول Contract (قديم يحتوي أعمدة بأسماء بمسافات)
-    const { data, error } = await supabase
-      .from('Contract')
-      .select('*')
-      .order('"Contract Number"', { ascending: false });
+    // المحاولة 1: جدول Contract (يدعم Contract_Number أو "Contract Number")
+    let data: any[] | null = null; let error: any = null;
+    try {
+      const q1 = await supabase.from('Contract').select('*').order('Contract_Number', { ascending: false });
+      data = q1.data as any[] | null; error = q1.error;
+    } catch (e) { error = e; }
+    if (error || !Array.isArray(data)) {
+      const q2 = await supabase.from('Contract').select('*').order('"Contract Number"', { ascending: false });
+      data = q2.data as any[] | null; error = q2.error;
+    }
 
     if (!error && Array.isArray(data)) {
       console.log('Fetched contracts (Contract):', data.length);
-      return (data as any[]) as Contract[];
+      // normalize key
+      const normalized = (data as any[]).map((c: any) => ({
+        ...c,
+        Contract_Number: c.Contract_Number ?? c['Contract Number'] ?? c.id ?? c.ID,
+        'Contract Number': c['Contract Number'] ?? c.Contract_Number ?? c.id ?? c.ID,
+      })) as Contract[];
+      return normalized as any;
     }
 
     console.warn('Contract table not available or errored, falling back to contracts. Details:', error?.message || JSON.stringify(error));
@@ -62,6 +73,7 @@ export const fetchContracts = async (): Promise<Contract[]> => {
 
     const mapped: Contract[] = (v2 || []).map((c: any) => ({
       // id غير متاح بالصيغة الرقمية في الجدول الحديث
+      Contract_Number: String(c.id),
       'Contract Number': String(c.id),
       'Customer Name': c.customer_name ?? '',
       'Contract Date': c.start_date ?? c.created_at ?? '',
