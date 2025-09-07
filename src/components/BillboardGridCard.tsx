@@ -30,7 +30,7 @@ export const BillboardGridCard: React.FC<BillboardGridCardProps> = ({
     ? 'bg-amber-500 hover:bg-amber-600'
     : 'bg-red-500 hover:bg-red-600';
 
-  // حساب الأيا�� المتبقية
+  // حساب الأيام المتبقية
   const getDaysRemaining = () => {
     if (!billboard.Rent_End_Date) return null;
 
@@ -120,7 +120,7 @@ export const BillboardGridCard: React.FC<BillboardGridCardProps> = ({
                   <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5">{billboard.District}</span>
                 )}
                 {billboard.Municipality && (
-                  <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5">البلدية: {billboard.Municipality}</span>
+                  <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5">{billboard.Municipality}</span>
                 )}
               </div>
             )}
