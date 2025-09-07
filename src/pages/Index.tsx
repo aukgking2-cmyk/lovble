@@ -13,6 +13,8 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Search, Filter, MapPin, Star, Play, ArrowDown, LogOut, User, BarChart3 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { addRequest } from '@/services/bookingService';
+import { getPriceFor, CUSTOMERS } from '@/data/pricing';
 import { useAuth } from '@/contexts/AuthContext';
 import heroBillboard from '@/assets/hero-billboard.jpg';
 import { BRAND_NAME, BRAND_LOGO } from '@/lib/branding';
@@ -38,7 +40,7 @@ const Index = () => {
     } catch (error) {
       toast({
         title: "خطأ في تحميل البيانات",
-        description: "تعذر تحميل اللوحات الإعلانية",
+        description: "تعذر تحميل اللوحا�� الإعلانية",
         variant: "destructive"
       });
     } finally {
@@ -116,6 +118,10 @@ const Index = () => {
   };
 
   const handleSubmitBooking = () => {
+    const months = 1; // افتراضي
+    const customer = CUSTOMERS[0];
+    const total = selectedBillboards.reduce((s,b)=> s + (getPriceFor((b as any).Size || (b as any).size, (b as any).Level || (b as any).level, customer, months) ?? 0), 0);
+    addRequest(String((user as any)?.id || 'guest'), selectedBillboards, total);
     toast({
       title: "تم إرسال طلب الحجز",
       description: `تم إرسال طلب حجز ${selectedBillboards.length} لوحة بنجاح`,
