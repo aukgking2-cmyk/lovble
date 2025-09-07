@@ -82,7 +82,7 @@ export const ContractsTable = () => {
     }
   };
 
-  const computeDaysLeft = (contract: Contract) => {
+  function computeDaysLeft(contract: Contract): number {
     try {
       const endDate = new Date(contract['End Date']);
       const today = new Date();
@@ -91,7 +91,7 @@ export const ContractsTable = () => {
     } catch {
       return NaN;
     }
-  };
+  }
 
   const getStatusBadge = (contract: Contract) => {
     const daysLeft = computeDaysLeft(contract);
