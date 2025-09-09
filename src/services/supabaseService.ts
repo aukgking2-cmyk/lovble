@@ -25,7 +25,7 @@ export const fetchAllBillboards = async (): Promise<Billboard[]> => {
       return processedData as any;
     }
 
-    console.warn('Supabase billboards unavailable, falling back. Details:', error?.message || 'no data');
+    console.warn('Supabase billboards unavailable, falling back. Details:', (error as any)?.message || 'no data');
   } catch (error) {
     console.warn('Supabase fetchAllBillboards failed, will fallback:', (error as any)?.message || JSON.stringify(error));
   }
@@ -94,7 +94,7 @@ export const fetchContracts = async (): Promise<Contract[]> => {
       return normalized as any;
     }
 
-    console.warn('Contract table not available or errored, falling back to contracts. Details:', error?.message || JSON.stringify(error));
+    console.warn('Contract table not available or errored, falling back to contracts. Details:', (error as any)?.message || JSON.stringify(error));
 
     // المحاولة 2: جدول contracts (حديث بحقول snake_case)
     const { data: v2, error: err2 } = await supabase
@@ -103,12 +103,11 @@ export const fetchContracts = async (): Promise<Contract[]> => {
       .order('created_at', { ascending: false });
 
     if (err2) {
-      console.warn('Failed fetching contracts from both tables:', err2?.message || JSON.stringify(err2));
+      console.warn('Failed fetching contracts from both tables:', (err2 as any)?.message || JSON.stringify(err2));
       return [];
     }
 
     const mapped: Contract[] = (v2 || []).map((c: any) => ({
-      // id غير متاح بالصيغة الرقمية في ��لجدول الحديث
       Contract_Number: String(c.id),
       'Contract Number': String(c.id),
       'Customer Name': c.customer_name ?? '',
@@ -162,25 +161,22 @@ export const fetchPricing = async (): Promise<Pricing[]> => {
 };
 
 // إنشاء عقد جديد
-export const createContract = async (contractData: any): Promise<Contract> => {
-  try {
-    const { data, error } = await supabase
-      .from('Contract')
-      .insert([contractData])
-      .select()
-      .single();
+export async function createContract(contractData: any) {
+  const { data, error } = await supabase
+    .from('Contract')
+    .insert({
+      'Customer Name': contractData.customer_name,
+      'Contract Date': contractData.start_date,
+      'End Date': contractData.end_date,
+      'Total Rent': contractData.rent_cost || 0,
+      'Ad Type': contractData.ad_type || '',
+          })
+    .select()
+    .single();
 
-    if (error) {
-      console.error('Error creating contract:', error);
-      throw error;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error in createContract:', error);
-    throw error;
-  }
-};
+  if (error) throw error;
+  return data;
+}
 
 // تحديث حالة اللوحة
 export const updateBillboardStatus = async (

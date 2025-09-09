@@ -1,52 +1,64 @@
+import type { Billboard, Contract } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 
-export interface Contract {
-  id: string;
+interface ContractData {
   customer_name: string;
-  ad_type?: string;
   start_date: string;
   end_date: string;
   rent_cost: number;
-  created_at: string;
-  updated_at: string;
+  discount?: number;
+  billboard_ids?: string[];
+  ad_type?: string;
 }
 
-export interface ContractCreate {
+interface ContractCreate {
   customer_name: string;
-  ad_type?: string;
   start_date: string;
   end_date: string;
   rent_cost: number;
-  billboard_ids: string[];
+  discount?: number;
+  ad_type?: string;
+  billboard_ids?: string[];
 }
 
-// إنشاء عقد جديد مع ربطه بلوحات متعددة
-export async function createContract(contractData: ContractCreate) {
+// إنشاء عقد جديد
+export async function createContract(contractData: ContractData) {
+  // فصل معرفات اللوحات عن بيانات العقد
   const { billboard_ids, ...contractPayload } = contractData;
   
   // إنشاء العقد
   const { data: contract, error: contractError } = await supabase
-    .from('contracts')
-    .insert(contractPayload)
+    .from('Contract')
+    .insert({
+      'Customer Name': contractPayload.customer_name,
+      'Ad Type': contractPayload.ad_type || '',
+      'Contract Date': contractPayload.start_date,
+      'End Date': contractPayload.end_date,
+      'Total Rent': contractPayload.rent_cost,
+      'Discount': contractPayload.discount ?? null
+    })
     .select()
     .single();
 
   if (contractError) throw contractError;
 
-  // ربط اللوحات بالعقد (واحدة تلو الأخرى لتجنب مشاكل الـ upsert)
-  for (const billboard_id of billboard_ids) {
-    const { error: billboardError } = await supabase
-      .from('billboards')
-      .update({
-        contract_id: contract.id,
-        start_date: contractData.start_date,
-        end_date: contractData.end_date,
-        customer_name: contractData.customer_name,
-        Status: 'rented'
-      })
-      .eq('ID', Number(billboard_id));
+  // تحديث اللوحات المرتبطة بالعقد
+  if (billboard_ids && billboard_ids.length > 0) {
+    for (const billboard_id of billboard_ids) {
+      const newContractNumber = (contract as any)?.Contract_Number ?? (contract as any)?.['Contract Number'];
+      const { error: billboardError } = await supabase
+        .from('billboards')
+        .update({
+          Contract_Number: newContractNumber,
+          Rent_Start_Date: contractData.start_date,
+          Rent_End_Date: contractData.end_date,
+          Customer_Name: contractData.customer_name,
+          Status: 'rented'
+        })
+        .eq('ID', Number(billboard_id));
 
-    if (billboardError) throw billboardError;
+      if (billboardError) throw billboardError;
+    }
   }
 
   return contract;
@@ -55,80 +67,232 @@ export async function createContract(contractData: ContractCreate) {
 // جلب جميع العقود
 export async function getContracts() {
   const { data, error } = await supabase
-    .from('contracts')
+    .from('Contract')
     .select('*')
-    .order('created_at', { ascending: false });
+    .order('"Contract Date"', { ascending: false });
 
   if (error) throw error;
-  return data;
+  return (data || []).map((c: any) => {
+    const id = c.Contract_Number ?? c['Contract Number'] ?? c.id ?? c.ID;
+    return {
+      ...c,
+      id,
+      Contract_Number: c.Contract_Number ?? c['Contract Number'] ?? id,
+      'Contract Number': c['Contract Number'] ?? c.Contract_Number ?? id,
+      customer_name: c.customer_name ?? c['Customer Name'] ?? c.Customer_Name ?? '',
+      ad_type: c.ad_type ?? c['Ad Type'] ?? c.Ad_Type ?? '',
+      start_date: c.start_date ?? c['Contract Date'] ?? c.contract_date ?? '',
+      end_date: c.end_date ?? c['End Date'] ?? c.end_date ?? '',
+      rent_cost: typeof c.rent_cost === 'number' ? c.rent_cost : Number(c['Total Rent'] ?? 0),
+      status: c.status ?? c['Print Status'] ?? '',
+    } as any;
+  });
 }
 
-// جلب عقد محدد مع اللوحات المرتبطة به
-export async function getContractWithBillboards(contractId: string) {
-  const { data: contract, error: contractError } = await supabase
-    .from('contracts')
-    .select('*')
-    .eq('id', contractId)
-    .single();
-
-  if (contractError) throw contractError;
-
-  const { data: billboards, error: billboardError } = await supabase
-    .from('billboards')
-    .select('*')
-    .eq('contract_id', contractId);
-
-  if (billboardError) throw billboardError;
-
-  return {
-    ...contract,
-    billboards
-  };
-}
-
-// جلب جميع اللوحات المتاحة (غير محجوزة أو انتهى عقدها)
-export async function getAvailableBillboards(): Promise<any[]> {
-  // استخدام loadBillboards من billboardService للحصول على البيانات المعالجة
+// جلب عقد مع اللوحات المرتبطة به
+export async function getContractWithBillboards(contractId: string): Promise<any> {
   try {
-    const { loadBillboards } = await import('./billboardService');
-    const allBillboards = await loadBillboards();
-    
-    // فلترة اللوحات المتاحة فقط
-    return allBillboards.filter(billboard => 
-      billboard.status === 'available' && 
-      (!billboard.contractNumber || billboard.contractNumber.trim() === '')
-    );
+    let contractResult: any = await (supabase as any)
+      .from('Contract')
+      .select('*')
+      .eq('Contract_Number', contractId)
+      .single();
+
+    if (contractResult.error) {
+      contractResult = await (supabase as any)
+        .from('Contract')
+        .select('*')
+        .eq('"Contract Number"', contractId)
+        .single();
+    }
+
+    if (contractResult.error) throw contractResult.error;
+
+    const billboardResult: any = await (supabase as any)
+      .from('billboards')
+      .select('*')
+      .eq('Contract_Number', contractId);
+
+    const c = contractResult.data || {};
+    const normalized = {
+      ...c,
+      id: c.Contract_Number ?? c['Contract Number'] ?? c.id ?? c.ID,
+      Contract_Number: c.Contract_Number ?? c['Contract Number'],
+      'Contract Number': c['Contract Number'] ?? c.Contract_Number,
+      customer_name: c.customer_name ?? c['Customer Name'] ?? c.Customer_Name ?? '',
+      ad_type: c.ad_type ?? c['Ad Type'] ?? c.Ad_Type ?? '',
+      start_date: c.start_date ?? c['Contract Date'] ?? c.contract_date ?? '',
+      end_date: c.end_date ?? c['End Date'] ?? c.end_date ?? '',
+      rent_cost: typeof c.rent_cost === 'number' ? c.rent_cost : Number(c['Total Rent'] ?? 0),
+    } as any;
+
+    return {
+      ...normalized,
+      billboards: (billboardResult.data || []) as any[],
+    };
   } catch (error) {
-    console.warn('خطأ في جلب اللوحات المتاحة:', error);
-    return [];
+    throw error;
   }
 }
 
-// تحرير اللوحات المنتهية الصلاحية
-export async function releaseExpiredBillboards() {
-  const { error } = await supabase.rpc('auto_release_expired_billboards');
-  if (error) throw error;
-}
-
-// تحديث العقد
-export async function updateContract(contractId: string, updates: Partial<Contract>) {
+// جلب اللوحات المتاحة
+export async function getAvailableBillboards() {
   const { data, error } = await supabase
-    .from('contracts')
-    .update(updates)
-    .eq('id', contractId)
-    .select()
-    .single();
+    .from('billboards')
+    .select('*')
+    .eq('Status', 'available')
+    .order('ID', { ascending: true });
 
   if (error) throw error;
   return data;
 }
 
-// حذف العقد (سيحرر اللوحات تلقائياً بسبب ON DELETE SET NULL)
-export async function deleteContract(contractId: string) {
+// تحديث عقد
+export async function updateContract(contractId: string, updates: any) {
+  let result: any = await (supabase as any)
+    .from('Contract')
+    .update(updates)
+    .eq('Contract_Number', contractId)
+    .select()
+    .single();
+
+  if (result.error) {
+    result = await (supabase as any)
+      .from('Contract')
+      .update(updates)
+      .eq('"Contract Number"', contractId)
+      .select()
+      .single();
+  }
+
+  if (result.error) throw result.error;
+  return result.data;
+}
+
+// تحديث العقود المنتهية الصلاحية
+export async function updateExpiredContracts() {
+  const today = new Date().toISOString().split('T')[0];
+  
   const { error } = await supabase
-    .from('contracts')
-    .delete()
-    .eq('id', contractId);
+    .from('Contract')
+    .update({ 'Print Status': 'expired' })
+    .lt('End Date', today)
+    .neq('Print Status', 'expired');
 
   if (error) throw error;
 }
+
+// إحصائيات العقود
+export async function getContractsStats() {
+  const { data: contracts, error } = await supabase
+    .from('Contract')
+    .select('*');
+
+  if (error) throw error;
+  
+  const today = new Date();
+  const stats = {
+    total: contracts?.length || 0,
+    active: contracts?.filter(c => c['End Date'] && new Date(c['End Date']) > today).length || 0,
+    expired: contracts?.filter(c => c['End Date'] && new Date(c['End Date']) <= today).length || 0,
+  };
+  
+  return stats;
+}
+
+// تحرير اللوحات المنتهية الصلاحية تلقائياً
+export async function autoReleaseExpiredBillboards() {
+  const today = new Date().toISOString().split('T')[0];
+  
+  const { data: expiredContracts, error: fetchError } = await supabase
+    .from('Contract')
+    .select('"Contract Number", "End Date"')
+    .lt('"End Date"', today);
+
+  if (fetchError) throw fetchError;
+
+  for (const contract of expiredContracts || []) {
+    // تحديث اللوحات المرتبطة بهذا العقد
+    await supabase
+      .from('billboards')
+      .update({
+        Status: 'available',
+        Contract_Number: null,
+        Customer_Name: null,
+        Rent_Start_Date: null,
+        Rent_End_Date: null
+      })
+      .eq('Contract_Number', contract['Contract Number']);
+  }
+}
+
+// حذف عقد
+export async function deleteContract(contractNumber: string) {
+  await supabase
+    .from('billboards')
+    .update({
+      Status: 'available',
+      Contract_Number: null,
+      Customer_Name: null,
+      Rent_Start_Date: null,
+      Rent_End_Date: null
+    })
+    .eq('Contract_Number', contractNumber);
+
+  let result: any = await (supabase as any)
+    .from('Contract')
+    .delete()
+    .eq('Contract_Number', contractNumber);
+
+  if (result.error) {
+    result = await (supabase as any)
+      .from('Contract')
+      .delete()
+      .eq('"Contract Number"', contractNumber);
+  }
+
+  if (result.error) throw result.error;
+}
+
+// إضافة/إزالة لوحات من عقد
+export async function addBillboardsToContract(
+  contractNumber: string,
+  billboardIds: (string | number)[],
+  meta: { start_date: string; end_date: string; customer_name: string }
+) {
+  for (const id of billboardIds) {
+    const { error } = await supabase
+      .from('billboards')
+      .update({
+        Status: 'rented',
+        Contract_Number: contractNumber,
+        Customer_Name: meta.customer_name,
+        Rent_Start_Date: meta.start_date,
+        Rent_End_Date: meta.end_date,
+      })
+      .eq('ID', Number(id));
+    if (error) throw error;
+  }
+}
+
+export async function removeBillboardFromContract(
+  contractNumber: string,
+  billboardId: string | number
+) {
+  const { error } = await supabase
+    .from('billboards')
+    .update({
+      Status: 'available',
+      Contract_Number: null,
+      Customer_Name: null,
+      Rent_Start_Date: null,
+      Rent_End_Date: null,
+    })
+    .eq('ID', Number(billboardId))
+    .eq('Contract_Number', contractNumber);
+  if (error) throw error;
+}
+
+// Export types
+export type { ContractData, ContractCreate };
+export type { Contract } from '@/types';
