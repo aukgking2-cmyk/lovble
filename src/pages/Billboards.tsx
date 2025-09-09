@@ -31,15 +31,17 @@ export default function Billboards() {
     setEditing(bb);
     setEditForm({
       Billboard_Name: bb.name || '',
-      City: bb.city || '',
-      Nearest_Landmark: bb.location || '',
-      Size: bb.size || '',
-      Status: bb.status || 'available',
-      Level: bb.level || 'A',
-      Contract_Number: (bb as any).contractNumber || '',
-      Customer_Name: (bb as any).clientName || '',
-      Ad_Type: (bb as any).adType || '',
-      Image_URL: bb.image || ''
+      City: (bb as any).City || bb.city || '',
+      Municipality: (bb as any).Municipality || (bb as any).municipality || '',
+      District: (bb as any).District || (bb as any).district || '',
+      Nearest_Landmark: (bb as any).Nearest_Landmark || bb.location || '',
+      Size: (bb as any).Size || bb.size || '',
+      Status: (bb as any).Status || bb.status || 'available',
+      Level: (bb as any).Level || bb.level || 'A',
+      Contract_Number: (bb as any).contractNumber || (bb as any).Contract_Number || '',
+      Customer_Name: (bb as any).clientName || (bb as any).Customer_Name || '',
+      Ad_Type: (bb as any).adType || (bb as any).Ad_Type || '',
+      Image_URL: (bb as any).Image_URL || bb.image || ''
     });
     setEditOpen(true);
   };
@@ -126,7 +128,7 @@ export default function Billboards() {
       {/* العنوان والأزرار */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">إدارة اللوحات الإعلانية</h1>
+          <h1 className="text-3xl font-bold text-foreground">إدارة اللو��ات الإعلانية</h1>
           <p className="text-muted-foreground">عرض وإدارة جميع اللوحات الإعلانية مع إمكانية التعديل والصيا��ة</p>
         </div>
         <Button className="bg-gradient-primary text-white shadow-elegant hover:shadow-glow transition-smooth">
