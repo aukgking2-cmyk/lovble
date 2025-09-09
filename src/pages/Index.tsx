@@ -116,14 +116,19 @@ const Index = () => {
         (statusFilter === 'maintenance' && isMaintenance) ||
         (statusFilter === 'near-expiry' && isNearExpiry);
     } else {
-      if (statusFilter === 'available') {
-        finalStatusMatch = isAvailable;
-      } else if (statusFilter === 'near-expiry') {
-        finalStatusMatch = isNearExpiry;
-      } else if (statusFilter === 'all') {
-        finalStatusMatch = isAvailable || isNearExpiry;
+      // الزوار: لا تظهر المحجوز إطلاقاً حتى مع البحث، ولا تعرض القريبة الانتهاء
+      if (!user) {
+        finalStatusMatch = (statusFilter === 'available' || statusFilter === 'all') ? isAvailable : false;
       } else {
-        finalStatusMatch = false;
+        if (statusFilter === 'available') {
+          finalStatusMatch = isAvailable;
+        } else if (statusFilter === 'near-expiry') {
+          finalStatusMatch = isNearExpiry;
+        } else if (statusFilter === 'all') {
+          finalStatusMatch = isAvailable || isNearExpiry;
+        } else {
+          finalStatusMatch = false;
+        }
       }
     }
 
@@ -238,7 +243,7 @@ const Index = () => {
           <div className="flex items-center justify-center gap-8 text-white/80">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">{availableBillboards}+</div>
-              <div className="text-sm">لوح�� متاحة</div>
+              <div className="text-sm">لوحة متاحة</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">24/7</div>
