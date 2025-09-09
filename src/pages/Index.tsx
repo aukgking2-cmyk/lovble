@@ -100,13 +100,18 @@ const Index = () => {
 
     let finalStatusMatch = false;
     if (isAdmin) {
-      const allowBookedForAdminSearch = q.length > 0; // اسمح بظهور المحجوز عند وجود بحث
-      finalStatusMatch = (allowBookedForAdminSearch || !isBooked) && (
-        statusFilter === 'all' ||
-        (statusFilter === 'available' && isAvailable) ||
-        (statusFilter === 'maintenance' && isMaintenance) ||
-        (statusFilter === 'near-expiry' && isNearExpiry)
-      );
+      if (statusFilter === 'booked') {
+        finalStatusMatch = isBooked;
+      } else if (statusFilter === 'all') {
+        const hideBookedByDefault = q.length === 0;
+        finalStatusMatch = hideBookedByDefault ? !isBooked : true;
+      } else {
+        finalStatusMatch = (
+          (statusFilter === 'available' && isAvailable) ||
+          (statusFilter === 'maintenance' && isMaintenance) ||
+          (statusFilter === 'near-expiry' && isNearExpiry)
+        );
+      }
     } else if (myOnly && isAllowedBoard) {
       // العميل يستطيع رؤية لوحاته حتى لو كانت محجوزة/صيانة
       finalStatusMatch =
@@ -227,7 +232,7 @@ const Index = () => {
           <p className="text-xl md:text-2xl text-gray-200 mb-8 leading-relaxed">
             منصة متكاملة لحجز وإدارة اللوحات الإعلانية الطرقي��
             <br />
-            بأسعار تنافسية وخدمة مميزة على مدار الساعة
+            بأسع��ر تنافسية وخدمة مميزة على مدار الساعة
           </p>
           
           <div className="flex items-center justify-center gap-4 mb-12">
@@ -343,6 +348,7 @@ const Index = () => {
                   <SelectItem value="near-expiry">قريبة الانتهاء</SelectItem>
                   {isAdmin && (
                     <>
+                      <SelectItem value="booked">محجوزة</SelectItem>
                       <SelectItem value="maintenance">صيانة</SelectItem>
                     </>
                   )}
@@ -370,7 +376,7 @@ const Index = () => {
                   </PopoverTrigger>
                   <PopoverContent className="w-72 p-0" align="start">
                     <Command>
-                      <CommandInput placeholder="ابحث عن نوع الإعلان..." />
+                      <CommandInput placeholder="ابحث ع�� نوع الإعلان..." />
                       <CommandList>
                         <CommandEmpty>لا يوجد نتائج</CommandEmpty>
                         <CommandGroup>
