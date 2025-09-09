@@ -88,12 +88,12 @@ const Index = () => {
 
     let finalStatusMatch = false;
     if (isAdmin) {
-      finalStatusMatch =
+      finalStatusMatch = (!isBooked) && (
         statusFilter === 'all' ||
         (statusFilter === 'available' && isAvailable) ||
-        (statusFilter === 'booked' && isBooked) ||
         (statusFilter === 'maintenance' && isMaintenance) ||
-        (statusFilter === 'near-expiry' && isNearExpiry);
+        (statusFilter === 'near-expiry' && isNearExpiry)
+      );
     } else if (myOnly && isAllowedBoard) {
       // العميل يستطيع رؤية لوحاته حتى لو كانت محجوزة/صيانة
       finalStatusMatch =
@@ -325,7 +325,6 @@ const Index = () => {
                   <SelectItem value="near-expiry">قريبة الانتهاء</SelectItem>
                   {isAdmin && (
                     <>
-                      <SelectItem value="booked">محجوزة</SelectItem>
                       <SelectItem value="maintenance">صيانة</SelectItem>
                     </>
                   )}
@@ -344,27 +343,29 @@ const Index = () => {
                 </SelectContent>
               </Select>
 
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="gap-2">
-                    {adTypeFilter === 'all' ? 'نوع الإعلان (الكل)' : `نوع الإعلان: ${adTypeFilter}`}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-72 p-0" align="start">
-                  <Command>
-                    <CommandInput placeholder="ابحث عن نوع الإعلان..." />
-                    <CommandList>
-                      <CommandEmpty>لا يوجد نتائج</CommandEmpty>
-                      <CommandGroup>
-                        <CommandItem onSelect={() => setAdTypeFilter('all')}>الكل</CommandItem>
-                        {uniqueAdTypes.map((t) => (
-                          <CommandItem key={t} onSelect={() => setAdTypeFilter(t)}>{t}</CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              {user && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="gap-2">
+                      {adTypeFilter === 'all' ? 'نوع الإعلان (الكل)' : `نوع الإعلان: ${adTypeFilter}`}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-72 p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="ابحث عن نوع الإعلان..." />
+                      <CommandList>
+                        <CommandEmpty>لا يوجد نتائج</CommandEmpty>
+                        <CommandGroup>
+                          <CommandItem onSelect={() => setAdTypeFilter('all')}>الكل</CommandItem>
+                          {uniqueAdTypes.map((t) => (
+                            <CommandItem key={t} onSelect={() => setAdTypeFilter(t)}>{t}</CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              )}
 
               {user && (
                 <div className="flex items-center gap-2 px-3 py-2 border rounded-md">
