@@ -3,7 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { loadBillboards } from '@/services/billboardService';
-import { Printer, Filter } from 'lucide-react';
+import { Printer, Filter, Save } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/sonner';
 
 type Row = { size: string; install: number | null; print: number | null };
 
@@ -19,6 +21,7 @@ function writeOverrides(v: Record<string, { install?: number; print?: number }>)
 export default function InstallationPricing() {
   const [rows, setRows] = useState<Row[]>([]);
   const [query, setQuery] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -38,7 +41,24 @@ export default function InstallationPricing() {
         const ov = overrides[size] || {};
         return { size, install: ov.install ?? avg, print: ov.print ?? null };
       });
-      setRows(base);
+      try {
+        const { data, error } = await supabase
+          .from('installation_print_pricing')
+          .select('size, install_price, print_price');
+        if (!error && Array.isArray(data)) {
+          const map = new Map(base.map(r => [r.size, { ...r }]));
+          data.forEach((d: any) => {
+            const k = String(d.size);
+            const prev = map.get(k) || { size: k, install: null, print: null };
+            map.set(k, { size: k, install: d.install_price ?? prev.install ?? null, print: d.print_price ?? prev.print ?? null });
+          });
+          setRows(Array.from(map.values()).sort((a,b)=>a.size.localeCompare(b.size)));
+        } else {
+          setRows(base);
+        }
+      } catch {
+        setRows(base);
+      }
     })();
   }, []);
 
@@ -52,6 +72,22 @@ export default function InstallationPricing() {
     const ov = readOverrides();
     ov[size] = { ...(ov[size] || {}), [field]: value == null ? undefined : value } as any;
     writeOverrides(ov);
+  };
+
+  const saveAll = async () => {
+    try {
+      setSaving(true);
+      const payload = rows.map(r => ({ size: r.size, install_price: r.install ?? null, print_price: r.print ?? null }));
+      const { error } = await supabase
+        .from('installation_print_pricing')
+        .upsert(payload, { onConflict: 'size' });
+      if (error) throw error;
+      toast.success('تم حفظ الأسعار بنجاح');
+    } catch (e: any) {
+      toast.error(`تعذر الحفظ: ${e?.message || e}`);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const printAll = () => {
@@ -91,6 +127,9 @@ export default function InstallationPricing() {
                 <Filter className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input placeholder="تصفية حسب المقاس" value={query} onChange={(e)=>setQuery(e.target.value)} className="pr-10" />
               </div>
+              <Button variant="outline" onClick={saveAll} disabled={saving}>
+                <Save className="h-4 w-4 ml-2" /> {saving ? 'جاري الحفظ...' : 'حفظ'}
+              </Button>
               <Button onClick={printAll}><Printer className="h-4 w-4 ml-2" />طباعة</Button>
             </div>
           </div>
