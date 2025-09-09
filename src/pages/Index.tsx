@@ -54,9 +54,21 @@ const Index = () => {
   };
 
   const filteredBillboards = billboards.filter(billboard => {
-    const matchesSearch = billboard.Billboard_Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         billboard.District?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         billboard.City?.toLowerCase().includes(searchTerm.toLowerCase());
+    const q = searchTerm.trim().toLowerCase();
+    const matchesSearch = !q || [
+      billboard.Billboard_Name,
+      billboard.District,
+      billboard.City,
+      billboard.Municipality,
+      billboard.Nearest_Landmark,
+      billboard.Size,
+      billboard.Level,
+      (billboard as any).Customer_Name,
+      (billboard as any).Ad_Type,
+      (billboard as any)['Ad Type'],
+      String(billboard.ID),
+      String((billboard as any).Contract_Number ?? (billboard as any)['Contract Number'] ?? '')
+    ].some((v) => String(v || '').toLowerCase().includes(q));
     const matchesSize = sizeFilter === 'all' || billboard.Size === sizeFilter;
     const matchesMunicipality = municipalityFilter === 'all' || (billboard.Municipality ?? '') === municipalityFilter;
     const adTypeVal = String((billboard as any).Ad_Type ?? (billboard as any)['Ad Type'] ?? '');
@@ -88,7 +100,8 @@ const Index = () => {
 
     let finalStatusMatch = false;
     if (isAdmin) {
-      finalStatusMatch = (!isBooked) && (
+      const allowBookedForAdminSearch = q.length > 0; // اسمح بظهور المحجوز عند وجود بحث
+      finalStatusMatch = (allowBookedForAdminSearch || !isBooked) && (
         statusFilter === 'all' ||
         (statusFilter === 'available' && isAvailable) ||
         (statusFilter === 'maintenance' && isMaintenance) ||
@@ -225,7 +238,7 @@ const Index = () => {
           <div className="flex items-center justify-center gap-8 text-white/80">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">{availableBillboards}+</div>
-              <div className="text-sm">لوحة متاحة</div>
+              <div className="text-sm">لوح�� متاحة</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">24/7</div>
