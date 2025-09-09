@@ -321,6 +321,24 @@ export default function Billboards() {
               <Input value={editForm.Nearest_Landmark || ''} onChange={(e) => setEditForm((p: any) => ({ ...p, Nearest_Landmark: e.target.value }))} />
             </div>
             <div>
+              <Label>البلدية</Label>
+              <Select value={editForm.Municipality || ''} onValueChange={(v) => setEditForm((p: any) => ({ ...p, Municipality: v }))}>
+                <SelectTrigger><SelectValue placeholder="اختر البلدية" /></SelectTrigger>
+                <SelectContent>
+                  {municipalities.map((m) => (<SelectItem key={String(m)} value={String(m)}>{String(m)}</SelectItem>))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>المنطقة</Label>
+              <Select value={editForm.District || ''} onValueChange={(v) => setEditForm((p: any) => ({ ...p, District: v }))}>
+                <SelectTrigger><SelectValue placeholder="اختر المنطقة" /></SelectTrigger>
+                <SelectContent>
+                  {districts.map((d) => (<SelectItem key={String(d)} value={String(d)}>{String(d)}</SelectItem>))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
               <Label>المقاس</Label>
               <Select value={editForm.Size || ''} onValueChange={(v) => setEditForm((p: any) => ({ ...p, Size: v }))}>
                 <SelectTrigger><SelectValue placeholder="اختر المقاس" /></SelectTrigger>
