@@ -98,7 +98,9 @@ export default function Billboards() {
   };
 
   const cities = [...new Set(billboards.map(b => b.city).filter(Boolean))];
-  const sizes = [...new Set(billboards.map(b => b.size).filter(Boolean))];
+  const sizes = [...new Set(billboards.map(b => (b as any).Size || b.size).filter(Boolean))];
+  const municipalities = [...new Set(billboards.map(b => (b as any).Municipality || (b as any).municipality).filter(Boolean))];
+  const districts = [...new Set(billboards.map(b => (b as any).District || (b as any).district).filter(Boolean))];
   const filteredBillboards = billboards.filter((billboard) => {
     const matchesSearch = billboard.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          billboard.location.toLowerCase().includes(searchQuery.toLowerCase());
