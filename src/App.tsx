@@ -14,6 +14,8 @@ import ContractEdit from "./pages/ContractEdit";
 import Billboards from "./pages/Billboards";
 import Bookings from "./pages/Bookings";
 import Users from "./pages/Users";
+import PricingList from "./pages/PricingList";
+import Settings from "./pages/Settings";
 import { MainLayout } from "@/components/Layout/MainLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -61,6 +63,20 @@ const App = () => (
               <ProtectedRoute requireAdmin>
                 <MainLayout>
                   <Users />
+                </MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/pricing" element={
+              <ProtectedRoute requireAdmin>
+                <MainLayout>
+                  <PricingList />
+                </MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/settings" element={
+              <ProtectedRoute requireAdmin>
+                <MainLayout>
+                  <Settings />
                 </MainLayout>
               </ProtectedRoute>
             } />
