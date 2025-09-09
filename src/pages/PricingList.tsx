@@ -36,7 +36,7 @@ const extraCustomersLsKey = 'pricing_extra_customers_v1';
 const customSizesLsKey = 'pricing_custom_sizes_v1';
 
 export default function PricingList() {
-  const allLevels = useMemo(() => Array.from(new Set(PRICING.map(p => p['ال��ستوى']))), []);
+  const allLevels = useMemo(() => Array.from(new Set(PRICING.map(p => p['المستوى']))), []);
   const allSizes = useMemo(() => Array.from(new Set(PRICING.map(p => p['المقاس']))), []);
 
   const [selectedLevel, setSelectedLevel] = useState<string>(allLevels[0] || 'A');
