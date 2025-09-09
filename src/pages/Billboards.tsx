@@ -101,6 +101,7 @@ export default function Billboards() {
   const sizes = [...new Set(billboards.map(b => (b as any).Size || b.size).filter(Boolean))];
   const municipalities = [...new Set(billboards.map(b => (b as any).Municipality || (b as any).municipality).filter(Boolean))];
   const districts = [...new Set(billboards.map(b => (b as any).District || (b as any).district).filter(Boolean))];
+  const levels = [...new Set(billboards.map(b => (b as any).Level || b.level).filter(Boolean))];
   const filteredBillboards = billboards.filter((billboard) => {
     const matchesSearch = billboard.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          billboard.location.toLowerCase().includes(searchQuery.toLowerCase());
@@ -322,21 +323,17 @@ export default function Billboards() {
             </div>
             <div>
               <Label>البلدية</Label>
-              <Select value={editForm.Municipality || ''} onValueChange={(v) => setEditForm((p: any) => ({ ...p, Municipality: v }))}>
-                <SelectTrigger><SelectValue placeholder="اختر البلدية" /></SelectTrigger>
-                <SelectContent>
-                  {municipalities.map((m) => (<SelectItem key={String(m)} value={String(m)}>{String(m)}</SelectItem>))}
-                </SelectContent>
-              </Select>
+              <Input list="municipality-list" value={editForm.Municipality || ''} onChange={(e) => setEditForm((p: any) => ({ ...p, Municipality: e.target.value }))} placeholder="اختر أو اكتب بلدية" />
+              <datalist id="municipality-list">
+                {municipalities.map((m) => (<option key={String(m)} value={String(m)} />))}
+              </datalist>
             </div>
             <div>
               <Label>المنطقة</Label>
-              <Select value={editForm.District || ''} onValueChange={(v) => setEditForm((p: any) => ({ ...p, District: v }))}>
-                <SelectTrigger><SelectValue placeholder="اختر المنطقة" /></SelectTrigger>
-                <SelectContent>
-                  {districts.map((d) => (<SelectItem key={String(d)} value={String(d)}>{String(d)}</SelectItem>))}
-                </SelectContent>
-              </Select>
+              <Input list="district-list" value={editForm.District || ''} onChange={(e) => setEditForm((p: any) => ({ ...p, District: e.target.value }))} placeholder="اختر أو اكتب منطقة" />
+              <datalist id="district-list">
+                {districts.map((d) => (<option key={String(d)} value={String(d)} />))}
+              </datalist>
             </div>
             <div>
               <Label>المقاس</Label>
@@ -348,8 +345,13 @@ export default function Billboards() {
               </Select>
             </div>
             <div>
-              <Label>المست��ى</Label>
-              <Input value={editForm.Level || ''} onChange={(e) => setEditForm((p: any) => ({ ...p, Level: e.target.value }))} />
+              <Label>المستوى</Label>
+              <Select value={editForm.Level || ''} onValueChange={(v) => setEditForm((p: any) => ({ ...p, Level: v }))}>
+                <SelectTrigger><SelectValue placeholder="اختر المستوى" /></SelectTrigger>
+                <SelectContent>
+                  {levels.map((lv) => (<SelectItem key={String(lv)} value={String(lv)}>{String(lv)}</SelectItem>))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="sm:col-span-2">
               <Label>رابط الصورة</Label>
