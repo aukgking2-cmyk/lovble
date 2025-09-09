@@ -17,6 +17,7 @@ import Users from "./pages/Users";
 import PricingList from "./pages/PricingList";
 import Settings from "./pages/Settings";
 import Reports from "./pages/Reports";
+import InstallationPricing from "./pages/InstallationPricing";
 import { MainLayout } from "@/components/Layout/MainLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -85,6 +86,13 @@ const App = () => (
               <ProtectedRoute requireAdmin>
                 <MainLayout>
                   <Reports />
+                </MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/installation-pricing" element={
+              <ProtectedRoute requireAdmin>
+                <MainLayout>
+                  <InstallationPricing />
                 </MainLayout>
               </ProtectedRoute>
             } />
