@@ -145,8 +145,8 @@ export const BillboardGridCard: React.FC<BillboardGridCardProps> = ({
             )}
           </div>
 
-          {/* معلومات العقد (نمط موحّد للجميع) */}
-          {(contractNumber || endDate || customerName) && (
+          {/* معلومات العقد (تظهر للمدير فقط) */}
+          {isAdmin && (contractNumber || endDate || customerName) && (
             <div className="mb-4 text-xs text-muted-foreground">
               <div className="flex flex-wrap gap-2">
                 {contractNumber && (
@@ -162,7 +162,7 @@ export const BillboardGridCard: React.FC<BillboardGridCardProps> = ({
             </div>
           )}
 
-          {/* أزرار الإجراءات */}
+          {/* أزرار الإجراءا�� */}
           {showBookingActions && (
             <div className="flex gap-2">
               <Button
