@@ -196,9 +196,7 @@ const Index = () => {
         
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
           <div className="mb-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 backdrop-blur-sm rounded-full border border-primary/30 mb-4">
-              <img src={BRAND_LOGO} alt={BRAND_NAME} className="h-5 w-auto" />
-            </div>
+            <img src={BRAND_LOGO} alt={BRAND_NAME} className="mx-auto h-16 md:h-20 w-auto" />
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
@@ -249,10 +247,8 @@ const Index = () => {
       <header className="bg-card/95 backdrop-blur-sm border-b border-border/50 sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-primary rounded-lg">
-                <img src={BRAND_LOGO} alt={BRAND_NAME} className="h-6 w-auto" />
-              </div>
+            <div className="flex items-center">
+              <img src={BRAND_LOGO} alt={BRAND_NAME} className="h-10 md:h-12 w-auto" />
             </div>
             <div className="flex items-center gap-4">
               <Badge variant="outline" className="gap-2">
@@ -434,7 +430,7 @@ const Index = () => {
           <div className="text-center py-12">
             <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">لا توجد نتائج</h3>
-            <p className="text-muted-foreground">جرب تعديل معايير البحث أو الفلترة</p>
+            <p className="text-muted-foreground">جرب تعديل مع��يير البحث أو الفلترة</p>
           </div>
         )}
       </div>
