@@ -13,6 +13,7 @@ import ContractCreate from "./pages/ContractCreate";
 import ContractEdit from "./pages/ContractEdit";
 import Billboards from "./pages/Billboards";
 import Bookings from "./pages/Bookings";
+import Users from "./pages/Users";
 import { MainLayout } from "@/components/Layout/MainLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -53,6 +54,13 @@ const App = () => (
               <ProtectedRoute requireAdmin>
                 <MainLayout>
                   <Bookings />
+                </MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/users" element={
+              <ProtectedRoute requireAdmin>
+                <MainLayout>
+                  <Users />
                 </MainLayout>
               </ProtectedRoute>
             } />
