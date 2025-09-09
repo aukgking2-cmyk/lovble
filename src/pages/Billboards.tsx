@@ -36,7 +36,6 @@ export default function Billboards() {
       Size: bb.size || '',
       Status: bb.status || 'available',
       Level: bb.level || 'A',
-      Price: bb.price || 0,
       Contract_Number: (bb as any).contractNumber || '',
       Customer_Name: (bb as any).clientName || '',
       Ad_Type: (bb as any).adType || '',
@@ -49,7 +48,8 @@ export default function Billboards() {
     if (!editing) return;
     setSaving(true);
     const id = editing.id;
-    const payload = { ...editForm };
+    const { Billboard_Name, City, Nearest_Landmark, Size, Level, Image_URL } = editForm as any;
+    const payload: any = { Billboard_Name, City, Nearest_Landmark, Size, Level, Image_URL };
 
     const { error } = await supabase.from('billboards').update(payload).eq('ID', Number(id));
 
@@ -95,7 +95,8 @@ export default function Billboards() {
     }
   };
 
-  const cities = [...new Set(billboards.map(b => b.city))];
+  const cities = [...new Set(billboards.map(b => b.city).filter(Boolean))];
+  const sizes = [...new Set(billboards.map(b => b.size).filter(Boolean))];
   const filteredBillboards = billboards.filter((billboard) => {
     const matchesSearch = billboard.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          billboard.location.toLowerCase().includes(searchQuery.toLowerCase());
@@ -126,7 +127,7 @@ export default function Billboards() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">إدارة اللوحات الإعلانية</h1>
-          <p className="text-muted-foreground">عرض وإدارة جميع اللوحات الإعلانية مع إمكانية التعديل والصيانة</p>
+          <p className="text-muted-foreground">عرض وإدارة جميع اللوحات الإعلانية مع إمكانية التعديل والصيا��ة</p>
         </div>
         <Button className="bg-gradient-primary text-white shadow-elegant hover:shadow-glow transition-smooth">
           <Plus className="h-4 w-4 ml-2" />
@@ -304,7 +305,12 @@ export default function Billboards() {
             </div>
             <div>
               <Label>المدينة</Label>
-              <Input value={editForm.City || ''} onChange={(e) => setEditForm((p: any) => ({ ...p, City: e.target.value }))} />
+              <Select value={editForm.City || ''} onValueChange={(v) => setEditForm((p: any) => ({ ...p, City: v }))}>
+                <SelectTrigger><SelectValue placeholder="اختر المدينة" /></SelectTrigger>
+                <SelectContent>
+                  {cities.map((c) => (<SelectItem key={c} value={c as string}>{c}</SelectItem>))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="sm:col-span-2">
               <Label>أقرب معلم</Label>
@@ -312,38 +318,32 @@ export default function Billboards() {
             </div>
             <div>
               <Label>المقاس</Label>
-              <Input value={editForm.Size || ''} onChange={(e) => setEditForm((p: any) => ({ ...p, Size: e.target.value }))} />
+              <Select value={editForm.Size || ''} onValueChange={(v) => setEditForm((p: any) => ({ ...p, Size: v }))}>
+                <SelectTrigger><SelectValue placeholder="اختر المقاس" /></SelectTrigger>
+                <SelectContent>
+                  {sizes.map((s) => (<SelectItem key={s} value={s as string}>{s}</SelectItem>))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>الحالة</Label>
-              <Select value={editForm.Status || 'available'} onValueChange={(v) => setEditForm((p: any) => ({ ...p, Status: v }))}>
-                <SelectTrigger><SelectValue placeholder="اختر الحالة" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="available">متاح</SelectItem>
-                  <SelectItem value="rented">مؤجر</SelectItem>
-                  <SelectItem value="maintenance">صيانة</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input readOnly value={(editForm.Contract_Number ? 'غير متاحة (ضمن عقد)' : (editForm.Status || 'متاح')) as string} />
             </div>
             <div>
               <Label>المست��ى</Label>
               <Input value={editForm.Level || ''} onChange={(e) => setEditForm((p: any) => ({ ...p, Level: e.target.value }))} />
             </div>
             <div>
-              <Label>السعر</Label>
-              <Input type="number" value={editForm.Price ?? ''} onChange={(e) => setEditForm((p: any) => ({ ...p, Price: Number(e.target.value) }))} />
-            </div>
-            <div>
               <Label>رقم العقد</Label>
-              <Input value={editForm.Contract_Number || ''} onChange={(e) => setEditForm((p: any) => ({ ...p, Contract_Number: e.target.value }))} />
+              <Input readOnly value={editForm.Contract_Number || ''} />
             </div>
             <div>
               <Label>اسم الزبون</Label>
-              <Input value={editForm.Customer_Name || ''} onChange={(e) => setEditForm((p: any) => ({ ...p, Customer_Name: e.target.value }))} />
+              <Input readOnly value={editForm.Customer_Name || ''} />
             </div>
             <div>
               <Label>نوع الإعلان</Label>
-              <Input value={editForm.Ad_Type || ''} onChange={(e) => setEditForm((p: any) => ({ ...p, Ad_Type: e.target.value }))} />
+              <Input readOnly value={editForm.Ad_Type || ''} />
             </div>
             <div className="sm:col-span-2">
               <Label>رابط الصورة</Label>
