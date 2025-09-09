@@ -50,8 +50,8 @@ export default function Billboards() {
     if (!editing) return;
     setSaving(true);
     const id = editing.id;
-    const { Billboard_Name, City, Nearest_Landmark, Size, Level, Image_URL } = editForm as any;
-    const payload: any = { Billboard_Name, City, Nearest_Landmark, Size, Level, Image_URL };
+    const { Billboard_Name, City, Municipality, District, Nearest_Landmark, Size, Level, Image_URL } = editForm as any;
+    const payload: any = { Billboard_Name, City, Municipality, District, Nearest_Landmark, Size, Level, Image_URL };
 
     const { error } = await supabase.from('billboards').update(payload).eq('ID', Number(id));
 
@@ -128,7 +128,7 @@ export default function Billboards() {
       {/* العنوان والأزرار */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">إدارة اللو��ات الإعلانية</h1>
+          <h1 className="text-3xl font-bold text-foreground">إدارة اللوحات الإعلانية</h1>
           <p className="text-muted-foreground">عرض وإدارة جميع اللوحات الإعلانية مع إمكانية التعديل والصيا��ة</p>
         </div>
         <Button className="bg-gradient-primary text-white shadow-elegant hover:shadow-glow transition-smooth">
