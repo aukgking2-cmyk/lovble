@@ -348,24 +348,8 @@ export default function Billboards() {
               </Select>
             </div>
             <div>
-              <Label>الحالة</Label>
-              <Input readOnly value={(editForm.Contract_Number ? 'غير متاحة (ضمن عقد)' : (editForm.Status || 'متاح')) as string} />
-            </div>
-            <div>
               <Label>المست��ى</Label>
               <Input value={editForm.Level || ''} onChange={(e) => setEditForm((p: any) => ({ ...p, Level: e.target.value }))} />
-            </div>
-            <div>
-              <Label>رقم العقد</Label>
-              <Input readOnly value={editForm.Contract_Number || ''} />
-            </div>
-            <div>
-              <Label>اسم الزبون</Label>
-              <Input readOnly value={editForm.Customer_Name || ''} />
-            </div>
-            <div>
-              <Label>نوع الإعلان</Label>
-              <Input readOnly value={editForm.Ad_Type || ''} />
             </div>
             <div className="sm:col-span-2">
               <Label>رابط الصورة</Label>
