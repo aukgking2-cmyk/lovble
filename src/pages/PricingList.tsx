@@ -192,16 +192,16 @@ export default function PricingList() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-right">
               <thead>
-                <tr className="bg-muted/50 border-b">
+                <tr className="bg-muted/20 border-b border-border/30">
                   {(otherCustomer === PRIMARY_SENTINEL ? PRIMARY_CUSTOMERS : [otherCustomer]).map(c => (
                     <th key={`head-${c}`} className="p-3 font-medium">{c}</th>
                   ))}
-                  <th className="p-3 text-center w-24 bg-amber-50 dark:bg-white/5">الحجم</th>
+                  <th className="p-3 text-center w-24 bg-muted/20">الحجم</th>
                 </tr>
               </thead>
               <tbody>
                 {sizesForLevel.map(size => (
-                  <tr key={size} className="border-b hover:bg-background/50">
+                  <tr key={size} className="border-b border-border/20 hover:bg-background/50">
                     {(otherCustomer === PRIMARY_SENTINEL ? PRIMARY_CUSTOMERS : [otherCustomer]).map(c => {
                       const k = keyFor(size, c);
                       const isEditing = editing && editing.key === k && editing.month === selectedMonthKey;
@@ -218,14 +218,14 @@ export default function PricingList() {
                               onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); if (e.key === 'Escape') setEditing(null); }}
                             />
                           ) : (
-                            <button className="text-right w-full" onClick={() => setEditing({ key: k, month: selectedMonthKey })}>
+                            <button className="text-right w-full text-foreground" onClick={() => setEditing({ key: k, month: selectedMonthKey })}>
                               {priceFor(size, c)}
                             </button>
                           )}
                         </td>
                       );
                     })}
-                    <td className="p-3 text-center font-semibold bg-amber-50 dark:bg-white/5">{size}</td>
+                    <td className="p-3 text-center font-semibold bg-muted/20">{size}</td>
                   </tr>
                 ))}
               </tbody>
