@@ -81,11 +81,7 @@ const Auth = () => {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-primary rounded-xl">
-              <img src={BRAND_LOGO} alt={BRAND_NAME} className="h-8 w-auto" />
-            </div>
-          </div>
+          <img src={BRAND_LOGO} alt={BRAND_NAME} className="mx-auto mb-4 h-12 md:h-16 w-auto" />
           <p className="text-muted-foreground">منصة حجز وإدارة اللوحات الإعلانية</p>
         </div>
 
