@@ -11,6 +11,8 @@ import NotFound from "./pages/NotFound";
 import Contracts from "./pages/Contracts";
 import ContractCreate from "./pages/ContractCreate";
 import ContractEdit from "./pages/ContractEdit";
+import { MainLayout } from "@/components/Layout/MainLayout";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -24,11 +26,41 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/admin" element={<Dashboard />} />
-            <Route path="/admin/contracts" element={<Contracts />} />
-            <Route path="/admin/contracts/new" element={<ContractCreate />} />
-            <Route path="/admin/contracts/edit" element={<ContractEdit />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute requireAdmin>
+                <MainLayout>
+                  <Dashboard />
+                </MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin" element={
+              <ProtectedRoute requireAdmin>
+                <MainLayout>
+                  <Dashboard />
+                </MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/contracts" element={
+              <ProtectedRoute requireAdmin>
+                <MainLayout>
+                  <Contracts />
+                </MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/contracts/new" element={
+              <ProtectedRoute requireAdmin>
+                <MainLayout>
+                  <ContractCreate />
+                </MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/contracts/edit" element={
+              <ProtectedRoute requireAdmin>
+                <MainLayout>
+                  <ContractEdit />
+                </MainLayout>
+              </ProtectedRoute>
+            } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
