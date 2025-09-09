@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import Contracts from "./pages/Contracts";
 import ContractCreate from "./pages/ContractCreate";
 import ContractEdit from "./pages/ContractEdit";
+import Billboards from "./pages/Billboards";
 import { MainLayout } from "@/components/Layout/MainLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -37,6 +38,13 @@ const App = () => (
               <ProtectedRoute requireAdmin>
                 <MainLayout>
                   <Dashboard />
+                </MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/billboards" element={
+              <ProtectedRoute requireAdmin>
+                <MainLayout>
+                  <Billboards />
                 </MainLayout>
               </ProtectedRoute>
             } />
